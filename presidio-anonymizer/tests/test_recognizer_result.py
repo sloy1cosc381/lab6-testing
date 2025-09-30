@@ -285,6 +285,38 @@ def test_given_negative_start_or_endpoint_then_we_fail(start, end):
         create_recognizer_result("entity", 0, start, end)
 
 
+# STUDENT ADDITION START HERE
+@pytest.mark.parametrize(
+    # fmt: off
+    "start, end, mode",
+    [
+        (0, 1, 1),
+        (6, 10, 1),
+        (2, 5, 2),
+        (4, 7, 3),
+        (0, 10, 4),
+        (0, 2, 5),
+        (5, 8, 5),
+    ],
+    # fmt: on
+)
+def test_intersects(start,end,mode):
+    first = create_recognizer_result("entity", 0, 2, 5)
+    second = create_recognizer_result("entity", 0, start, end)
+
+    if(mode==1): #Check no overlap
+        assert first.intersects(second)==0
+    if(mode==2): #Check full overlap
+        assert first.intersects(second)==3
+    if(mode==3): #Check partial overlap
+        assert first.intersects(second)==1
+    if(mode==4): #Check complete containment
+        assert first.intersects(second)==3
+    if(mode==5): #Check exact-touch boundaries
+        assert first.intersects(second)==0
+# STUDENT ADDITION END HERE
+
+
 def create_recognizer_result(entity_type: str, score: float, start: int, end: int):
     data = {"entity_type": entity_type, "score": score, "start": start, "end": end}
     return RecognizerResult.from_json(data)
